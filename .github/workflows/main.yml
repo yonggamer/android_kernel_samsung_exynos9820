@@ -1,6 +1,7 @@
 name: Build Kernel
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -51,11 +52,11 @@ jobs:
       - name: Compile Kernel
         run: |
           # Adjust the following command to match your kernel build environment.
-          # Replace ARCH and CROSS_COMPILE as needed. For example:
+          # Replace ARCH and CROSS_COMPILE as needed.
           make -j$(nproc) ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- all
 
       - name: Archive Build Output
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: kernel-build
           path: path/to/kernel/output/
