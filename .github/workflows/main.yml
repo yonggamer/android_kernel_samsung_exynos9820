@@ -30,7 +30,7 @@ jobs:
         cp arch/arm64/boot/Image output/
 
     - name: Upload kernel artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: kernel
         path: output/
