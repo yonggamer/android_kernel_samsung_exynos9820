@@ -20,18 +20,48 @@ jobs:
     - name: Set up build environment
       run: |
         sudo apt-get update
-        sudo apt-get install -y build-essential libncurses-dev bison flex libssl-dev libelf-dev
+        sudo apt-get install -y \
+          bc \
+          bison \
+          build-essential \
+          ccache \
+          curl \
+          flex \
+          g++-multilib \
+          gcc-multilib \
+          git \
+          git-lfs \
+          gnupg \
+          gperf \
+          imagemagick \
+          lib32readline-dev \
+          lib32z1-dev \
+          libelf-dev \
+          liblz4-tool \
+          lz4 \
+          libsdl1.2-dev \
+          libssl-dev \
+          libxml2 \
+          libxml2-utils \
+          lzop \
+          pngcrush \
+          rsync \
+          schedtool \
+          squashfs-tools \
+          xsltproc \
+          zip \
+          zlib1g-dev \
+          gcc-10 \
+          g++-10 \
+          binutils
+
+    - name: Set GCC version
+      run: |
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 10
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 10
 
     - name: Build the kernel
       run: |
-        export TARGET_KERNEL_SOURCE=path/to/kernel/source
-        export TARGET_KERNEL_ARCH=arm64
-        export TARGET_KERNEL_CROSS_COMPILE_PREFIX=aarch64-linux-android-
-        export TARGET_KERNEL_CLANG_COMPILE=true
-        export TARGET_KERNEL_CLANG_VERSION=clang-r450784d
-        export TARGET_KERNEL_LLVM_BINUTILS=true
-        export TARGET_KERNEL_RUST_VERSION=1.73.0c
-        
         make ARCH=arm64 exynos9820-beyond0lte_defconfig
         make ARCH=arm64 -j$(nproc)
         mkdir -p output
