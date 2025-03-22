@@ -58,20 +58,27 @@ jobs:
         run: |
           sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-15 100
           sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-15 100
+          # Set environment variables for the build scripts.
           export CC=clang
           export CXX=clang++
+          export HOSTCC=clang
+          export HOSTCXX=clang++
+          echo "Using clang version: $(clang --version)"
 
       - name: Build the kernel
         env:
           CC: clang
           CXX: clang++
+          HOSTCC: clang
+          HOSTCXX: clang++
         run: |
-          # Generate default configuration using the desired defconfig
+          # Generate default configuration for the board
           make ARCH=arm64 exynos9820-beyond0lte_defconfig
-          # Disable CONFIG_CC_STACKPROTECTOR_STRONG since it's not supported
+          # Disable CONFIG_CC_STACKPROTECTOR_STRONG which is unsupported
           scripts/config --disable CONFIG_CC_STACKPROTECTOR_STRONG
+          # Update configuration to apply changes
           make ARCH=arm64 olddefconfig
-          # Build the kernel using Clang/LLVM 15
+          # Build the kernel forcing Clang for both target and host compilation
           make ARCH=arm64 -j$(nproc)
           mkdir -p output
           cp arch/arm64/boot/Image output/
