@@ -24,8 +24,8 @@ jobs:
 
     - name: Build the kernel
       run: |
-        make exynos9820_defconfig
-        make -j$(nproc)
+        make ARCH=arm64 exynos9820_defconfig
+        make ARCH=arm64 -j$(nproc)
         mkdir -p output
         cp arch/arm64/boot/Image output/
 
