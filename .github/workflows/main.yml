@@ -54,7 +54,7 @@ jobs:
             clang-15 \
             lld-15
 
-      - name: Set Clang as default compiler
+      - name: Set Clang/LLVM 15 as default compiler
         run: |
           sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-15 100
           sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-15 100
@@ -63,16 +63,15 @@ jobs:
 
       - name: Build the kernel
         run: |
-          # Set environment variables for a Clang build
-          export TARGET_KERNEL_CLANG_COMPILE=true
-          export TARGET_KERNEL_CLANG_VERSION=clang-15
-          # Generate default configuration using the desired defconfig
+          # Force using Clang by exporting CC and CXX
+          export CC=clang
+          export CXX=clang++
+          # Generate default configuration with the desired defconfig
           make ARCH=arm64 exynos9820-beyond0lte_defconfig
-          # Disable CONFIG_CC_STACKPROTECTOR_STRONG since -fstack-protector-strong is unsupported
+          # Disable CONFIG_CC_STACKPROTECTOR_STRONG since Clang 15 doesn't need it
           scripts/config --disable CONFIG_CC_STACKPROTECTOR_STRONG
-          # Update configuration to apply changes
           make ARCH=arm64 olddefconfig
-          # Build the kernel
+          # Build the kernel using Clang toolchain so GCC is not used
           make ARCH=arm64 -j$(nproc)
           mkdir -p output
           cp arch/arm64/boot/Image output/
