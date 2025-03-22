@@ -51,22 +51,26 @@ jobs:
             xsltproc \
             zip \
             zlib1g-dev \
-            gcc-10 \
-            g++-10 \
-            binutils
+            clang-15 \
+            lld-15
 
-      - name: Set GCC version
+      - name: Set Clang as default compiler
         run: |
-          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 10
-          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 10
+          sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-15 100
+          sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-15 100
+          export CC=clang
+          export CXX=clang++
 
       - name: Build the kernel
         run: |
-          # Generate default configuration
+          # Set environment variables for a Clang build
+          export TARGET_KERNEL_CLANG_COMPILE=true
+          export TARGET_KERNEL_CLANG_VERSION=clang-15
+          # Generate default configuration using the desired defconfig
           make ARCH=arm64 exynos9820-beyond0lte_defconfig
-          # Disable the stack protector setting that is not supported
+          # Disable CONFIG_CC_STACKPROTECTOR_STRONG since -fstack-protector-strong is unsupported
           scripts/config --disable CONFIG_CC_STACKPROTECTOR_STRONG
-          # Update the configuration based on the change above
+          # Update configuration to apply changes
           make ARCH=arm64 olddefconfig
           # Build the kernel
           make ARCH=arm64 -j$(nproc)
