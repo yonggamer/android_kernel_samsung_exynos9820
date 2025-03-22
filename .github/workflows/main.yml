@@ -24,6 +24,14 @@ jobs:
 
     - name: Build the kernel
       run: |
+        export TARGET_KERNEL_SOURCE=path/to/kernel/source
+        export TARGET_KERNEL_ARCH=arm64
+        export TARGET_KERNEL_CROSS_COMPILE_PREFIX=aarch64-linux-android-
+        export TARGET_KERNEL_CLANG_COMPILE=true
+        export TARGET_KERNEL_CLANG_VERSION=clang-r450784d
+        export TARGET_KERNEL_LLVM_BINUTILS=true
+        export TARGET_KERNEL_RUST_VERSION=1.73.0c
+        
         make ARCH=arm64 exynos9820-beyond0lte_defconfig
         make ARCH=arm64 -j$(nproc)
         mkdir -p output
