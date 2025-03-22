@@ -62,16 +62,16 @@ jobs:
           export CXX=clang++
 
       - name: Build the kernel
+        env:
+          CC: clang
+          CXX: clang++
         run: |
-          # Force using Clang by exporting CC and CXX
-          export CC=clang
-          export CXX=clang++
-          # Generate default configuration with the desired defconfig
+          # Generate default configuration using the desired defconfig
           make ARCH=arm64 exynos9820-beyond0lte_defconfig
-          # Disable CONFIG_CC_STACKPROTECTOR_STRONG since Clang 15 doesn't need it
+          # Disable CONFIG_CC_STACKPROTECTOR_STRONG since it's not supported
           scripts/config --disable CONFIG_CC_STACKPROTECTOR_STRONG
           make ARCH=arm64 olddefconfig
-          # Build the kernel using Clang toolchain so GCC is not used
+          # Build the kernel using Clang/LLVM 15
           make ARCH=arm64 -j$(nproc)
           mkdir -p output
           cp arch/arm64/boot/Image output/
