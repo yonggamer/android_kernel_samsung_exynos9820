@@ -1,0 +1,61 @@
+name: Build Kernel
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+
+      - name: Set up dependencies
+        run: |
+          sudo apt-get update
+          # The following installation command assumes that you have available packages for the exact required versions.
+          # In many cases you may need to add additional PPAs or manually build the tools.
+          sudo apt-get install -y \
+            gcc=3.2* \
+            clang=10.0.1* \
+            make=3.81* \
+            binutils=2.20* \
+            util-linux=2.10o* \
+            kmod=13* \
+            e2fsprogs=1.41.4* \
+            jfsutils=1.1.3* \
+            reiserfsprogs=3.6.3* \
+            xfsprogs=2.6.0* \
+            squashfs-tools=4.0* \
+            btrfs-progs=0.18* \
+            pcmciautils=004* \
+            quota-tools=3.09* \
+            ppp=2.4.0* \
+            isdn4k-utils=3.1pre1* \
+            nfs-common=1.0.5* \
+            procps=3.2.0* \
+            oprofile=0.9* \
+            udev=081* \
+            grub=0.93* \
+            mcelog=0.6* \
+            iptables=1.4.2* \
+            openssl=1.0.0* \
+            bc=1.06.95* || true
+
+      - name: Compile Kernel
+        run: |
+          # Adjust the following command to match your kernel build environment.
+          # Replace ARCH and CROSS_COMPILE as needed. For example:
+          make -j$(nproc) ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- all
+
+      - name: Archive Build Output
+        uses: actions/upload-artifact@v4
+        with:
+          name: kernel-build
+          path: path/to/kernel/output/
